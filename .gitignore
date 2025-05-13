@@ -1,0 +1,5 @@
+
+# Ignore virtual-envs & dotenv files
+.env
+.venv/
+
