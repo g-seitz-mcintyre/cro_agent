@@ -1,16 +1,8 @@
-import csv
-import os
 import uuid
 
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
 
 from cro_agent import graph
-
-conn = st.connection("gsheets", type=GSheetsConnection)
-
-df = conn.read()
-
 
 LOGO_URL = "Cheil-Logo.svg"
 
@@ -45,14 +37,6 @@ with st.sidebar:
 # ────────────────────────────────────────────────────────────────────────────────
 # 3) Main application logic (unchanged apart from auth guard)
 # ────────────────────────────────────────────────────────────────────────────────
-
-# after you detect a fresh login...
-email = st.user.email
-
-# Append the email to the Google Sheets
-new_row = {"Email": email}
-df = df.append(new_row, ignore_index=True)
-conn.update(data=df)
 
 
 # Repeat branding in the main pane if desired

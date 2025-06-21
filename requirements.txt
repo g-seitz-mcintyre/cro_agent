@@ -9,4 +9,4 @@ typing-extensions
 langgraph-cli[inmem]
 Authlib
 st-gsheets-connection
-
+pandas
