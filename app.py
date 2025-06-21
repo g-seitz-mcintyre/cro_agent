@@ -3,8 +3,14 @@ import os
 import uuid
 
 import streamlit as st
+from streamlit_gsheets import GSheetsConnection
 
 from cro_agent import graph
+
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+df = conn.read()
+
 
 LOGO_URL = "Cheil-Logo.svg"
 
@@ -42,12 +48,12 @@ with st.sidebar:
 
 # after you detect a fresh login...
 email = st.user.email
-log_path = "signins.csv"
 
+# Append the email to the Google Sheets
+new_row = {"Email": email}
+df = df.append(new_row, ignore_index=True)
+conn.update(data=df)
 
-with open(log_path, "a", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow([email])
 
 # Repeat branding in the main pane if desired
 st.image(LOGO_URL, width=160)
