@@ -20,7 +20,7 @@ if not getattr(st.user, "is_logged_in", False):
     st.markdown("Please sign in with your Google account to continue.")
 
     if st.button("Log in with Google"):  # provider key must match [auth.google]
-        st.login("google")
+        st.login()
 
     st.stop()  # halt the script until the user returns from OAuth callback
 
