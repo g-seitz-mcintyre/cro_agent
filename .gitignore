@@ -2,4 +2,5 @@
 # Ignore virtual-envs & dotenv files
 .env
 .venv/
+.streamlit/secrets.toml
 

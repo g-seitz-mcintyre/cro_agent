@@ -7,4 +7,5 @@ firecrawl-py
 python-dotenv
 typing-extensions
 langgraph-cli[inmem]
+Authlib
 
