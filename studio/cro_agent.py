@@ -17,7 +17,6 @@ class CROGraphState(TypedDict):
     markdown_analysis: str
     vision_analysis: str
     cro_summary: str
-    cro_report: bytes
 
 
 # Node: Scrape website using Firecrawl
@@ -38,7 +37,7 @@ def firecrawl_node(state):
 
 # Node: Analyze HTML content for CRO
 def html_agent_node(state):
-    llm = ChatOpenAI(model="gpt-4")
+    llm = ChatOpenAI(model="gpt-4o")
     system_msg = SystemMessage(
         content=(
             "You are a senior conversion-rate-optimization (CRO) consultant "
@@ -49,21 +48,7 @@ def html_agent_node(state):
         )
     )
 
-    human_prompt = (
-        "You will receive the raw HTML of a single web page delimited by ``<html_source>`` tags.\n\n"
-        "**Tasks**:\n"
-        "1. Identify up to **10 conversion-blocking or conversion-limiting issues**.\n"
-        "2. For each issue provide the following as a markdown table with one row per issue: \n"
-        "   • **Issue** (short title)\n"
-        "   • **Severity** (1-5)\n"
-        "   • **Why it hurts conversion** (1-2 sentences)\n"
-        "   • **Actionable fix** (concrete next step)\n"
-        "   • **Expected impact** (qualitative: low / medium / high).\n"
-        "3. Finish with a three-sentence executive summary highlighting the **top 3 fixes** in order of potential conversion lift.\n\n"
-        "<html_source>\n"
-        f"{state['html'][:20000]}\n"
-        "</html_source>"
-    )
+    human_prompt = f"{state['html'][:20000]}\n"
 
     response = llm([system_msg, HumanMessage(content=human_prompt)])
     return {"html_analysis": response.content}
@@ -75,21 +60,12 @@ def md_agent_node(state):
     system_msg = SystemMessage(
         content=(
             "You are a veteran CRO copywriter and messaging strategist. "
-            "Evaluate tone, clarity, information hierarchy and call-to-action (CTA) effectiveness. "
-            "Deliver crisp, high-impact copy recommendations that can boost user motivation and minimise friction."
+            "Evaluate tone, clarity, information hierarchy and call-to-action (CTA) effectiveness on this website. "
+            "Deliver crisp, high-impact copy recommendations that can boost user motivation and engagement."
         )
     )
 
-    human_prompt = (
-        "Review the Markdown content below, which represents the **visible copy** of the target web page.\n\n"
-        "**Tasks**:\n"
-        "1. Detect up to **10 copy or messaging issues** that may reduce conversions (e.g., vague CTA text, missing risk-reducers, weak value proposition).\n"
-        "2. Provide a markdown table with columns: **Issue • Current text (snippet) • Recommended rewrite • Psychological principle leveraged • Expected impact**.\n"
-        "3. Conclude with a short priority list sorted by **highest impact / lowest effort**.\n\n"
-        "```markdown\n"
-        f"{state['markdown'][:20000]}\n"
-        "```"
-    )
+    human_prompt = f"{state['markdown'][:20000]}"
 
     response = llm([system_msg, HumanMessage(content=human_prompt)])
     return {"markdown_analysis": response.content}
@@ -107,9 +83,8 @@ def vision_agent_node(state):
             {
                 "type": "text",
                 "text": (
-                    "You are a CRO art director analysing the **visual hierarchy, colour contrast, trust cues, and CTA prominence** of the screenshot.\n\n"
-                    "List up to **8 visual issues** in a markdown table with columns: **Issue • Why it hurts conversion • Specific redesign suggestion • Expected impact**.\n"
-                    "Finish with a one-paragraph summary of how these visual changes together could improve user journey and conversion rate."
+                    "You are a CRO specialist analysing the **visual hierarchy, colour contrast, trust cues, and CTA prominence** of the screenshot.\n\n"
+                    "List up to **8 visual issues** in a markdown table with columns: **Issue • Why it hurts conversion • Specific redesign suggestion • Expected impact**."
                 ),
             },
         ]
@@ -123,7 +98,7 @@ def vision_agent_node(state):
 def aggregate_node(state: CROGraphState) -> dict:
     """Combine all individual analyses into a single markdown summary."""
 
-    llm = ChatOpenAI(model="o4-mini")
+    llm = ChatOpenAI(model="gpt-4o")
 
     combined = "\n\n".join(
         [
@@ -135,14 +110,14 @@ def aggregate_node(state: CROGraphState) -> dict:
 
     prompt = HumanMessage(
         content=(
-            "Create a final CRO Audit report based on these analyses provided by your analysts:\n\n"
+            "Synthesize these analyses into a concise, actionable CRO gameplan:\n\n"
             f"{combined}"
         )
     )
 
     system = SystemMessage(
         content=(
-            "You are a seasoned technical writer with lots of experience in creating actionable CRO audit reports."
+            "You are a seasoned technical writer with lots of experience in formulating actionable instructions for conversion rate optimization."
         )
     )
 
