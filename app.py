@@ -1,3 +1,5 @@
+import csv
+import os
 import uuid
 
 import streamlit as st
@@ -19,10 +21,11 @@ if not getattr(st.user, "is_logged_in", False):
     st.title("Conversion Companion")
     st.markdown("Please sign in with your Google account to continue.")
 
-    if st.button("Log in with Google"):  # provider key must match [auth.google]
+    if st.button("Log in with Google"):
         st.login()
 
     st.stop()  # halt the script until the user returns from OAuth callback
+
 
 # ────────────────────────────────────────────────────────────────────────────────
 # 2) Sidebar — user info & logout
@@ -32,11 +35,19 @@ with st.sidebar:
     st.write(f"👤 **{st.user.name or st.user.email}**")
     if st.button("Log out"):
         st.logout()
-        st.experimental_rerun()
 
 # ────────────────────────────────────────────────────────────────────────────────
 # 3) Main application logic (unchanged apart from auth guard)
 # ────────────────────────────────────────────────────────────────────────────────
+
+# after you detect a fresh login...
+email = st.user.email
+log_path = "signins.csv"
+
+
+with open(log_path, "a", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow([email])
 
 # Repeat branding in the main pane if desired
 st.image(LOGO_URL, width=160)
