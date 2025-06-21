@@ -3,7 +3,7 @@ import uuid
 
 import streamlit as st
 
-from studio.cro_agent import graph
+from cro_agent import graph
 
 # 🔗 public-domain PNG served by Wikimedia
 LOGO_URL = "Cheil-Logo.svg"
