@@ -5,7 +5,13 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 from typing_extensions import TypedDict
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()  # pulls variables from .env during local dev
+except ModuleNotFoundError:
+    # running in Cloud where python-dotenv isn’t installed
+    pass
 
 
 class CROGraphState(TypedDict):
