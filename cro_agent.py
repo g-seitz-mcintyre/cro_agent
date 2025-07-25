@@ -56,7 +56,7 @@ def html_agent_node(state):
         )
     )
 
-    human_prompt = f"{state['html'][:20000]}\n"
+    human_prompt = f"{state['html']}\n"
 
     response = llm.invoke([system_msg, HumanMessage(content=human_prompt)])
     return {"html_analysis": response.content}
@@ -73,7 +73,7 @@ def md_agent_node(state):
         )
     )
 
-    human_prompt = f"{state['markdown'][:20000]}"
+    human_prompt = f"{state['markdown']}"
 
     response = llm.invoke([system_msg, HumanMessage(content=human_prompt)])
     return {"markdown_analysis": response.content}
