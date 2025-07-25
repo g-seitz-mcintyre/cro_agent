@@ -30,7 +30,9 @@ def firecrawl_node(state):
     url = state["url"]
     app = FirecrawlApp()
     scrape_result = app.scrape_url(
-        url, formats=["markdown", "html", "screenshot@fullPage"]
+        url,
+        formats=["markdown", "html", "screenshot@fullPage"],
+        only_main_content=True,
     )
 
     return {
