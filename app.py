@@ -4,8 +4,6 @@ import streamlit as st
 
 from cro_agent import graph
 
-LOGO_URL = "Cheil-Logo.svg"
-
 # ────────────────────────────────────────────────────────────────────────────────
 # Page & global config
 # ────────────────────────────────────────────────────────────────────────────────
@@ -15,7 +13,6 @@ st.set_page_config(page_title="Conversion Companion")
 # 1) Authentication gate (Google OIDC via Streamlit built‑in)
 # ────────────────────────────────────────────────────────────────────────────────
 if not getattr(st.user, "is_logged_in", False):
-    st.image(LOGO_URL, width=160)
     st.title("Conversion Companion")
     st.markdown("Please sign in with your Google account to continue.")
 
@@ -29,7 +26,6 @@ if not getattr(st.user, "is_logged_in", False):
 # 2) Sidebar — user info & logout
 # ────────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.image(LOGO_URL, width=110)
     st.write(f"👤 **{st.user.name or st.user.email}**")
     if st.button("Log out"):
         st.logout()
@@ -40,7 +36,6 @@ with st.sidebar:
 
 
 # Repeat branding in the main pane if desired
-st.image(LOGO_URL, width=160)
 st.title("Conversion Companion")
 
 # one‑time per browser tab
