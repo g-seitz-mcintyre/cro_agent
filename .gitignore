@@ -4,4 +4,6 @@
 .venv/
 .streamlit/secrets.toml
 signins.csv
+__pycache__/
+.langgraph_api/
 
