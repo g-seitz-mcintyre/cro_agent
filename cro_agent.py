@@ -31,7 +31,7 @@ def firecrawl_node(state):
     app = Firecrawl()
     scrape_result = app.scrape(
         url,
-        formats=["markdown", "html", "screenshot@fullPage"],
+        formats=["markdown", "html", "screenshot"],
         only_main_content=True,
     )
 
