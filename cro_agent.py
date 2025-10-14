@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from firecrawl import FirecrawlApp
+from firecrawl import Firecrawl
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
@@ -28,8 +28,8 @@ class CROGraphState(TypedDict):
 # Node: Scrape website using Firecrawl
 def firecrawl_node(state):
     url = state["url"]
-    app = FirecrawlApp()
-    scrape_result = app.scrape_url(
+    app = Firecrawl()
+    scrape_result = app.scrape(
         url,
         formats=["markdown", "html", "screenshot@fullPage"],
         only_main_content=True,
