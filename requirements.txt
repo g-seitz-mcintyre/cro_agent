@@ -10,3 +10,4 @@ langgraph-cli[inmem]
 Authlib
 st-gsheets-connection
 pandas
+supabase

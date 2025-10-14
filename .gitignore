@@ -6,4 +6,5 @@
 signins.csv
 __pycache__/
 .langgraph_api/
-
+.streamlit/
+SUPABASE_SETUP.md

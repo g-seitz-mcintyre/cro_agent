@@ -1,6 +1,8 @@
 import uuid
+from datetime import datetime
 
 import streamlit as st
+from supabase import Client, create_client
 
 from cro_agent import graph
 
@@ -8,6 +10,43 @@ from cro_agent import graph
 # Page & global config
 # ────────────────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Conversion Companion")
+
+
+# ────────────────────────────────────────────────────────────────────────────────
+# Initialize Supabase client
+# ────────────────────────────────────────────────────────────────────────────────
+def get_supabase_client() -> Client:
+    """Initialize and return Supabase client using credentials from secrets."""
+    supabase_url = st.secrets.get("SUPABASE_URL")
+    supabase_key = st.secrets.get("SUPABASE_KEY")
+
+    if not supabase_url or not supabase_key:
+        st.warning("Supabase credentials not found. User logging disabled.")
+        return None
+
+    return create_client(supabase_url, supabase_key)
+
+
+def log_user_login(email: str, name: str = None):
+    """Log user login to Supabase database."""
+    try:
+        supabase = get_supabase_client()
+        if not supabase:
+            return
+
+        data = {
+            "email": email,
+            "name": name,
+            "last_login": datetime.utcnow().isoformat(),
+        }
+
+        # Upsert: insert or update if email already exists
+        supabase.table("user_logins").upsert(data, on_conflict="email").execute()
+
+    except Exception as e:
+        # Silently fail - don't break the app if logging fails
+        print(f"Failed to log user: {e}")
+
 
 # ────────────────────────────────────────────────────────────────────────────────
 # 1) Authentication gate (Google OIDC via Streamlit built‑in)
@@ -21,6 +60,12 @@ if not getattr(st.user, "is_logged_in", False):
 
     st.stop()  # halt the script until the user returns from OAuth callback
 
+# ────────────────────────────────────────────────────────────────────────────────
+# Log user login to Supabase (only once per session)
+# ────────────────────────────────────────────────────────────────────────────────
+if "user_logged" not in st.session_state:
+    log_user_login(st.user.email, st.user.name)
+    st.session_state.user_logged = True
 
 # ────────────────────────────────────────────────────────────────────────────────
 # 2) Sidebar — user info & logout
