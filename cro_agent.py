@@ -45,7 +45,7 @@ def firecrawl_node(state):
 
 # Node: Analyze HTML content for CRO
 def html_agent_node(state):
-    llm = ChatOpenAI(model="gpt-4o")
+    llm = ChatOpenAI(model="gpt-4.1")
     system_msg = SystemMessage(
         content=(
             "You are a senior conversion-rate-optimization (CRO) consultant "
