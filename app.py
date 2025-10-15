@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import streamlit as st
 from supabase import Client, create_client
@@ -37,7 +37,7 @@ def log_user_login(email: str, name: str = None):
         data = {
             "email": email,
             "name": name,
-            "last_login": datetime.utcnow().isoformat(),
+            "last_login": datetime.now(timezone.utc).isoformat(),
         }
 
         # Upsert: insert or update if email already exists
@@ -46,6 +46,26 @@ def log_user_login(email: str, name: str = None):
     except Exception as e:
         # Silently fail - don't break the app if logging fails
         print(f"Failed to log user: {e}")
+
+
+def log_user_input(email: str, url: str):
+    """Log user input (URL analysis request) to Supabase database."""
+    try:
+        supabase = get_supabase_client()
+        if not supabase:
+            return
+
+        data = {
+            "user_email": email,
+            "url": url,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+
+        supabase.table("user_inputs").insert(data).execute()
+
+    except Exception as e:
+        # Silently fail - don't break the app if logging fails
+        print(f"Failed to log user input: {e}")
 
 
 # ────────────────────────────────────────────────────────────────────────────────
@@ -96,6 +116,9 @@ for msg in st.session_state.history:
 if prompt := st.chat_input("Which URL would you like to analyse?"):
     st.chat_message("user").markdown(prompt)
     st.session_state.history.append({"role": "user", "content": prompt})
+
+    # Log user input to database
+    log_user_input(st.user.email, prompt)
 
     with st.chat_message("assistant"):
         with st.spinner("Analysing…"):
