@@ -129,7 +129,7 @@ def aggregate_node(state: CROGraphState) -> dict:
         )
     )
 
-    response = llm([system, prompt])
+    response = llm.invoke([system, prompt])
     return {"cro_summary": response.content}
 
 
